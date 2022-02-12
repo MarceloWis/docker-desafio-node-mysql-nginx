@@ -6,13 +6,15 @@ const config = {
   database: 'nodedb'
 }
 const mysql = require('mysql');
-const connection = mysql.createConnection(config);
+let connection = null;
+
 
 const app = express();
 const PORT = 3000
 
 app.get('/',  (req, res) => {
-  const sql = `INSERT INTO people (name) VALUES ('Marcelo')`;
+  if(connection === null) connection = mysql.createConnection(config)
+  const sql = `INSERT INTO people (id, name) VALUES (${parseInt(Math.random() * 100)}, 'Marcelo-${Math.random()}')`;
   const get = `SELECT * FROM people`
   connection.query(sql, (err, result) => {
     if (err) {
@@ -29,7 +31,6 @@ app.get('/',  (req, res) => {
         html += `<li>${person.name}</li>`;
       });
       html += '</ul>';
-      connection.destroy();
       return res.send(html);
     });
   })
